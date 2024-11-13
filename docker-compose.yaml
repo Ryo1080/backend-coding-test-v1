@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  mysql:
+    build:
+      context: ./
+      dockerfile: "./docker/mysql/Dockerfile"
+    container_name: backend-coding-test-v1_mysql
+    restart: always
+    volumes:
+      - mysql-data-store:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: test
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+
+  php:
+    build:
+      context: ./
+      dockerfile: "./docker/laravel/Dockerfile"
+    container_name: backend-coding-test-v1_php
+    restart: always
+    volumes:
+      - ./laravel:/var/www/project
+      - ./docker/laravel/php.ini:/usr/local/etc/php/php.ini
+    working_dir: /var/www/project
+    env_file: ./laravel/.env
+    tty: true
+
+  nginx:
+    build:
+      context: ./
+      dockerfile: "./docker/nginx/Dockerfile"
+    container_name: backend-coding-test-v1_nginx
+    volumes:
+      - ./nginx/log:/var/log/nginx
+    restart: always
+    depends_on:
+      - php
+    ports:
+      - "8092:80"
+    links:
+      - php
+    env_file: ./nginx/.env
+
+volumes:
+  mysql-data-store:
