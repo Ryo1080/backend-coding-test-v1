@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Household\ReadHouseholdController;
+use App\Http\Controllers\Household\UpdateHouseholdController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,3 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return 'api success!';
 });
+
+Route::prefix('households')
+    ->group(function () {
+        Route::get('{householdId}', [ReadHouseholdController::class, '__invoke']);
+        Route::put('{householdId}', [UpdateHouseholdController::class, '__invoke']);
+    });
